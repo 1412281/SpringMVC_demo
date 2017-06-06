@@ -21,14 +21,13 @@
 </head>
 
 <body>
+	<%@include file="authheader.jsp"%>
 
 	<div class="container" style="padding-top: 30px;">
 		<sec:authorize access="hasRole('MANAGER')">
 			<a class="btn btn-primary" href="<c:url value='/addProduct' />"
 				role="button">Add new product</a>
 		</sec:authorize>
-
-		<h3>${manager}</h3>
 		<h1>Products List</h1>
 		<div class="row">
 			<div class="col-md-10">
@@ -40,6 +39,12 @@
 							<th>TinyDes</th>
 							<th>Price</th>
 							<th>Quantity</th>
+							<sec:authorize access="hasRole('MANAGER')">
+								<th width="100">Edit</th>
+							</sec:authorize>
+							<sec:authorize access="hasRole('MANAGER')">
+								<th width="100">Delete</th>
+							</sec:authorize>
 						</tr>
 					</thead>
 					<tbody>
@@ -50,7 +55,16 @@
 								<td>${product.tinyDes}</td>
 								<td>${product.price}</td>
 								<td>${product.quantity}</td>
-
+								<sec:authorize access="hasRole('MANAGER')">
+									<td><a
+										href="<c:url value='/edit-product-${product.proID}' />"
+										class="btn btn-success custom-width">edit</a></td>
+								</sec:authorize>
+								<sec:authorize access="hasRole('MANAGER')">
+									<td><a
+										href="<c:url value='/delete-product-${product.proID}' />"
+										class="btn btn-danger custom-width">delete</a></td>
+								</sec:authorize>
 							</tr>
 						</c:forEach>
 					</tbody>

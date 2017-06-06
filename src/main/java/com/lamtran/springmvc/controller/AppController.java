@@ -1,7 +1,9 @@
 package com.lamtran.springmvc.controller;
 
 import java.util.List;
- 
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
  
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -24,6 +27,7 @@ import com.lamtran.springmvc.model.UserProfile;
 import com.lamtran.springmvc.service.ProductService;
 import com.lamtran.springmvc.service.UserProfileService;
 import com.lamtran.springmvc.service.UserService;
+import com.lamtran.springmvc.model.User;
  
  
  
@@ -84,19 +88,47 @@ public class AppController {
 		return "addProduct";
 	}
 	
-  
-    /**
-     * This method will provide UserProfile list to views
-     */
+	@RequestMapping(value = { "/edit-product-{proID}" }, method = RequestMethod.GET)
+	public String editUser(@PathVariable int proID, ModelMap model) {
+		Product product = proService.getProductById(proID);
+		model.addAttribute("product", product);
+		model.addAttribute("edit", true);
+		model.addAttribute("loggedinuser", getPrincipal());
+		return "addProduct";
+	}
+	@RequestMapping(value = { "/edit-product-{proID}" }, method = RequestMethod.POST)
+	public String updateProduct(@Valid Product product, BindingResult result,
+			ModelMap model, @PathVariable String proID) {
+
+		if (result.hasErrors()) {
+			return "addProduct";
+		}
+
+		proService.updateProduct(product);
+
+		model.addAttribute("message", "Product " + product.getProName() + " " + " updated successfully");
+		model.addAttribute("loggedinuser", getPrincipal());
+		return "addProduct";
+	}
+
+	
+	@RequestMapping(value = { "/delete-user-{ssoId}" }, method = RequestMethod.GET)
+	public String deleteUser(@PathVariable int proID) {
+		userService.deleteUserById(proID);
+		return "redirect:/list";
+	}
+	
+	@RequestMapping(value = "/Access_Denied", method = RequestMethod.GET)
+	public String accessDeniedPage(ModelMap model) {
+		model.addAttribute("loggedinuser", getPrincipal());
+		return "accessDenied";
+	}
+	
     @ModelAttribute("roles")
     public List<UserProfile> initializeProfiles() {
         return userProfileService.getAllUserProfile();
     }
      
-    /**
-     * This method handles login GET requests.
-     * If users is already logged-in and tries to goto login page again, will be redirected to list page.
-     */
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String loginPage() {
         if (isCurrentAuthenticationAnonymous()) {
@@ -106,13 +138,27 @@ public class AppController {
         }
     }
  
+    @RequestMapping(value = { "/user-details-{username}"}, method = RequestMethod.GET)
+	public String listUsers(ModelMap model, @PathVariable String username) {
+		User user = userService.getByUsername(username);
+		model.addAttribute("user", user);
+		model.addAttribute("loggedinuser", getPrincipal());
+		return "user-details";
+	}
+    
+    @RequestMapping(value="/logout", method = RequestMethod.GET)
+	public String logoutPage (HttpServletRequest request, HttpServletResponse response){
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null){    
+			//new SecurityContextLogoutHandler().logout(request, response, auth);
+			persistentTokenBasedRememberMeServices.logout(request, response, auth);
+			SecurityContextHolder.getContext().setAuthentication(null);
+		}
+		return "redirect:/login?logout";
+	}
  
  
-    /**
-     * This method returns the principal[user-name] of logged-in user.
-     */
-    @SuppressWarnings("unused")
-	private String getPrincipal(){
+    private String getPrincipal(){
         String userName = null;
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
  
@@ -124,9 +170,6 @@ public class AppController {
         return userName;
     }
      
-    /**
-     * This method returns true if users is already authenticated [logged-in], else false.
-     */
     private boolean isCurrentAuthenticationAnonymous() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authenticationTrustResolver.isAnonymous(authentication);
