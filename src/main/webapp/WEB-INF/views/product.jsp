@@ -24,8 +24,9 @@
 	<%@include file="authheader.jsp"%>
 
 	<div class="container" style="padding-top: 30px;">
+	<span class="label label-success">${message}</span>
 		<sec:authorize access="hasRole('MANAGER')">
-			<a class="btn btn-primary" href="<c:url value='/addProduct' />"
+			<a class="btn btn-primary" href="<c:url value='/manager/addProduct' />"
 				role="button">Add new product</a>
 		</sec:authorize>
 		<h1>Products List</h1>
@@ -57,13 +58,16 @@
 								<td>${product.quantity}</td>
 								<sec:authorize access="hasRole('MANAGER')">
 									<td><a
-										href="<c:url value='/edit-product-${product.proID}' />"
+										href="<c:url value='/manager/edit-product-${product.proID}' />"
 										class="btn btn-success custom-width">edit</a></td>
 								</sec:authorize>
 								<sec:authorize access="hasRole('MANAGER')">
-									<td><a
-										href="<c:url value='/delete-product-${product.proID}' />"
-										class="btn btn-danger custom-width">delete</a></td>
+									<td>
+									<form action="<c:url value='/manager/delete-product-${product.proID}' />" method="GET" class="form-inline" role="form">
+
+										<button type="submit" class="btn btn-warning" >delete</button>
+									</form>
+									</td>
 								</sec:authorize>
 							</tr>
 						</c:forEach>

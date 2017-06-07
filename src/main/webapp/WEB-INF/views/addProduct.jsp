@@ -15,7 +15,7 @@ Author     : LAMTRAN
 <title>Add new Product</title>
 <meta name="viewport" content="initial-scale=1, maximum-scale=1">
 <link rel='stylesheet'
-	href='webjars/bootstrap/3.2.0/css/bootstrap.min.css'>
+	href='../webjars/bootstrap/3.2.0/css/bootstrap.min.css'>
 
 </head>
 
@@ -23,9 +23,11 @@ Author     : LAMTRAN
 
 
 	<%@include file="authheader.jsp"%>
-
+	
 	<div class="container" style="padding-top: 30px;">
-
+		
+		<span class="label label-success">${message}</span>
+		
 		<div class="row">
 
 			<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3"></div>
@@ -34,8 +36,8 @@ Author     : LAMTRAN
 
 				<c:choose>
 					<c:when test="${edit}">
-						<form:input type="text" path="proID" id="proID"
-							class="form-control input-sm" disabled="true" />
+						<form:input type="hidden" path="proID" id="proID"
+							class="form-control input-sm" disabled="true"/>
 					</c:when>
 					<c:otherwise>
 						<h2>Add new product</h2>
@@ -98,9 +100,9 @@ Author     : LAMTRAN
 
 	</div>
 
-	<script type="text/javascript" src="webjars/jquery/2.1.1/jquery.min.js"></script>
+	<script type="text/javascript" src="../webjars/jquery/2.1.1/jquery.min.js"></script>
 	<script type="text/javascript"
-		src="webjars/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		src="../webjars/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
 </body>
 

@@ -64,7 +64,7 @@ public class AppController {
 	}
  
 
-	@RequestMapping(value="/addProduct", method = RequestMethod.GET)
+	@RequestMapping(value="/manager/addProduct", method = RequestMethod.GET)
 	public String addProduct(ModelMap model) {
 		Product product = new Product();
 		model.addAttribute("product", product);
@@ -73,7 +73,7 @@ public class AppController {
 		return "addProduct";
 	}
 
-	@RequestMapping(value="/addProduct", method = RequestMethod.POST)
+	@RequestMapping(value="/manager/addProduct", method = RequestMethod.POST)
 	public String saveEmployee(@Valid Product product, BindingResult result,
 			ModelMap model) {
 
@@ -88,7 +88,7 @@ public class AppController {
 		return "addProduct";
 	}
 	
-	@RequestMapping(value = { "/edit-product-{proID}" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/manager/edit-product-{proID}" }, method = RequestMethod.GET)
 	public String editUser(@PathVariable int proID, ModelMap model) {
 		Product product = proService.getProductById(proID);
 		model.addAttribute("product", product);
@@ -96,7 +96,7 @@ public class AppController {
 		model.addAttribute("loggedinuser", getPrincipal());
 		return "addProduct";
 	}
-	@RequestMapping(value = { "/edit-product-{proID}" }, method = RequestMethod.POST)
+	@RequestMapping(value = { "/manager/edit-product-{proID}" }, method = RequestMethod.POST)
 	public String updateProduct(@Valid Product product, BindingResult result,
 			ModelMap model, @PathVariable String proID) {
 
@@ -112,10 +112,13 @@ public class AppController {
 	}
 
 	
-	@RequestMapping(value = { "/delete-user-{ssoId}" }, method = RequestMethod.GET)
-	public String deleteUser(@PathVariable int proID) {
-		userService.deleteUserById(proID);
-		return "redirect:/list";
+	@RequestMapping(value = { "/manager/delete-product-{proID}" }, method = RequestMethod.GET)
+	public String deleteProduct(ModelMap model, @PathVariable String proID) {
+		
+		
+		proService.deleteProductById(Integer.valueOf(proID));
+		
+		return "redirect:/product";
 	}
 	
 	@RequestMapping(value = "/Access_Denied", method = RequestMethod.GET)
@@ -138,9 +141,9 @@ public class AppController {
         }
     }
  
-    @RequestMapping(value = { "/user-details-{username}"}, method = RequestMethod.GET)
-	public String listUsers(ModelMap model, @PathVariable String username) {
-		User user = userService.getByUsername(username);
+    @RequestMapping(value = { "/user-details"}, method = RequestMethod.GET)
+	public String showUserDetails(ModelMap model) {
+		User user = userService.getByUsername(getPrincipal());
 		model.addAttribute("user", user);
 		model.addAttribute("loggedinuser", getPrincipal());
 		return "user-details";
@@ -157,7 +160,7 @@ public class AppController {
 		return "redirect:/login?logout";
 	}
  
- 
+    
     private String getPrincipal(){
         String userName = null;
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();

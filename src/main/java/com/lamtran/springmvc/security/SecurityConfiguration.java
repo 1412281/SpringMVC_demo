@@ -38,7 +38,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
         		.antMatchers("/", "/product").access("hasRole('STAFF') or hasRole('MANAGER')")
-        		.antMatchers("/addProduct/**").access("hasRole('MANAGER')")
+        		.antMatchers("/manager/**").access("hasRole('MANAGER')")
         		.and().formLogin().loginPage("/login")
                 .loginProcessingUrl("/login").usernameParameter("username").passwordParameter("password").and()
                 .rememberMe().rememberMeParameter("remember-me").tokenRepository(tokenRepository)
